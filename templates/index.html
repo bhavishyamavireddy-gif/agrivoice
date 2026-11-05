@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriVoice (అగ్రివాయిస్) - Voice-First AI for Rural Farmers</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Ramabhadra&family=Rozha+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <header class="top-nav">
+        <div class="logo-group">
+            <span class="logo-icon">🌾</span>
+            <div>
+                <h1>AgriVoice <span class="badge-telugu">అగ్రివాయిస్</span> <span class="badge-hindi">एग्रीवॉयस</span></h1>
+                <p class="tagline">Inclusive Voice-First AI for Feature-Phone Farmers • 2G/GSM Zero-Data Ready</p>
+            </div>
+        </div>
+
+        <!-- Mode Toggle: Simulator vs Real Telephony -->
+        <div class="mode-switch-group">
+            <button class="mode-tab active" id="tabSimulatorMode">
+                🖥️ Simulator Mode (Web Audio)
+            </button>
+            <button class="mode-tab" id="tabTelephonyMode">
+                📞 Real Telephony Gateway (Exotel/Twilio)
+            </button>
+        </div>
+
+        <div class="header-status">
+            <span class="toll-free-pill">📞 Toll-Free: 1800-AGRI-VOICE</span>
+            <span class="badge-live">● Live Audio AI</span>
+        </div>
+    </header>
+
+    <!-- Caller / Registered Farmer Selection Bar -->
+    <section class="farmer-bar">
+        <div class="farmer-bar-inner">
+            <span class="bar-title">👨‍🌾 Registered Farmer Profile (Caller ID Lookup):</span>
+            <div class="farmer-select-flex">
+                <select id="selFarmerProfile">
+                    <option value="+919848022338" selected>Apparao (అప్పారావు) • Kasimkota, Anakapalli [Sugarcane | Telugu]</option>
+                    <option value="+919440112233">Rajesh Verma (राजेश वर्मा) • Pendurthi, Vizag [Paddy | Hindi]</option>
+                    <option value="+919866554433">K. Satyam (సత్యనారాయణ) • Palasa, Srikakulam [Cashew | Telugu]</option>
+                    <option value="+919123456789">John Peter • Tagarapuvalasa, Bheemunipatnam [Groundnut | English]</option>
+                </select>
+                <div class="farmer-meta-pills" id="farmerMetaPills">
+                    <span class="meta-pill" id="pillVillage">📍 Kasimkota, Anakapalli</span>
+                    <span class="meta-pill" id="pillCrop">🌱 Crop: Sugarcane</span>
+                    <span class="meta-pill highlight-lang" id="pillLang">🌐 Registered Lang: Telugu</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- LEFT: 2G Feature Phone Simulator -->
+        <section class="phone-simulator-section">
+            <div class="section-header">
+                <h2>📱 2G Keypad Phone Simulator</h2>
+                <span class="sub-label">Simulating rural smallholder on Nokia/JioPhone with zero internet</span>
+            </div>
+
+            <!-- Phone Body -->
+            <div class="feature-phone">
+                <div class="phone-speaker-grille"></div>
+
+                <!-- Retro LCD Screen -->
+                <div class="phone-screen" id="phoneScreen">
+                    <div class="screen-header">
+                        <span class="network-carrier">BSNL 2G 📶</span>
+                        <span class="battery-icon">🔋 85%</span>
+                    </div>
+
+                    <!-- Screen Idle State -->
+                    <div class="screen-body idle-state" id="screenIdle">
+                        <div class="screen-status-badge" id="screenStatusBadge">IDLE • స్టాండ్‌బై</div>
+                        <div class="clock" id="screenClock">10:45 AM</div>
+                        <div class="date" id="screenDate">Thursday • గురువారం • गुरुवार</div>
+                        <div class="screen-menu-list" id="screenMenuList">
+                            <div class="screen-menu-item active-menu" id="menuItem1">
+                                <span class="menu-key-tag">[1]</span>
+                                <span>AI Doctor Call (కాల్ డాక్టర్)</span>
+                            </div>
+                            <div class="screen-menu-item" id="menuItem2">
+                                <span class="menu-key-tag">[2]</span>
+                                <span>Missed Call Weather (వాతావరణం)</span>
+                            </div>
+                        </div>
+                        <div class="screen-dial-row">
+                            <span class="screen-dial-label">DIAL:</span>
+                            <span class="screen-number-preview" id="screenNumberPreview">1800-AGRI-VOICE</span>
+                        </div>
+                    </div>
+
+                    <!-- Screen In-Call Active State -->
+                    <div class="screen-body active-call-state hidden" id="screenActiveCall">
+                        <div class="call-service-header" id="callServiceHeader">AI AGRI-DOCTOR CALL</div>
+                        <div class="call-timer-badge">
+                            <span class="live-rec">●</span> <span id="lblCallDuration">00:00</span>
+                        </div>
+                        <div class="caller-id" id="screenCallerTitle">AI Crop Doctor</div>
+                        <div class="call-status-sub" id="callStatusSub">Listening... Speak now</div>
+                        <div class="call-dtmf-feedback" id="callDtmfFeedback"></div>
+                        
+                        <!-- Animated Voice Waveform -->
+                        <div class="voice-wave-container" id="voiceWave">
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                        </div>
+
+                        <!-- Live Subtitle Box -->
+                        <div class="live-subtitle-box" id="liveSubtitleBox">
+                            "Connecting voice channel..."
+                        </div>
+                    </div>
+
+                    <!-- Screen Incoming Callback (Missed Call Response) -->
+                    <div class="screen-body incoming-state hidden" id="screenIncoming">
+                        <div class="incoming-anim">📲</div>
+                        <div class="incoming-label">AUTOMATIC WEATHER CALLBACK</div>
+                        <div class="incoming-number">1800-AGRI-VOICE</div>
+                        <div class="incoming-sub" id="incomingSubText">Zero Cost • Calling back in 3s...</div>
+                    </div>
+
+                    <div class="screen-footer">
+                        <span id="screenFooterLeft" class="screen-soft-hint">Select [OK]</span>
+                        <span id="screenFooterCenter" class="screen-soft-hint">BSNL GSM</span>
+                        <span id="screenFooterRight" class="screen-soft-hint">⌫ Clear</span>
+                    </div>
+                </div>
+
+                <!-- SEPARATE FEATURE ACTION BUTTONS -->
+                <div class="feature-action-container">
+                    <!-- Feature 1 Button -->
+                    <button class="svc-btn btn-feature1" id="btnDoctorCall" title="Call AI Agri-Doctor for step-by-step diagnosis">
+                        <span class="svc-icon">🩺</span>
+                        <div class="svc-text">
+                            <strong>FEATURE 1: Call AI Doctor</strong>
+                            <small>కాల్ డాక్టర్ • डॉक्टर से बात करें</small>
+                        </div>
+                    </button>
+
+                    <!-- Feature 2 Button -->
+                    <button class="svc-btn btn-feature2" id="btnWeatherMissedCall" title="Give missed call for instant automatic weather callback">
+                        <span class="svc-icon">🌧️</span>
+                        <div class="svc-text">
+                            <strong>FEATURE 2: Missed Call Weather</strong>
+                            <small>మిస్డ్-కాల్ వాతావరణం • मौसम अलर्ट</small>
+                        </div>
+                    </button>
+
+                    <!-- End Call Button -->
+                    <button class="svc-btn btn-hangup" id="btnEndCall" title="Terminate current active phone call" disabled>
+                        <span class="svc-icon">📵</span>
+                        <div class="svc-text">
+                            <strong>Hang Up / End Call</strong>
+                            <small>కాల్ ముగించు • कॉल समाप्त करें</small>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Functional Phone Navigation Bar (Soft Keys + D-Pad + OK) -->
+                <div class="phone-navigation-bar">
+                    <button class="nav-soft-btn" id="btnSoftLeft" title="Select / Call selected menu item or dialed number">
+                        <strong>Select</strong>
+                        <small>సెలెక్ట్</small>
+                    </button>
+                    <div class="dpad-cluster">
+                        <button class="dpad-arrow dpad-up" id="btnDpadUp" title="Navigate Up">▲</button>
+                        <div class="dpad-mid">
+                            <button class="dpad-arrow dpad-left" id="btnDpadLeft" title="Navigate Left">◀</button>
+                            <button class="dpad-ok-btn" id="btnKeypadOk" title="OK / Confirm / Select / Replay">OK</button>
+                            <button class="dpad-arrow dpad-right" id="btnDpadRight" title="Navigate Right">▶</button>
+                        </div>
+                        <button class="dpad-arrow dpad-down" id="btnDpadDown" title="Navigate Down">▼</button>
+                    </div>
+                    <button class="nav-soft-btn" id="btnSoftRight" title="Delete last dialed number or navigate Back">
+                        <strong>Back ⌫</strong>
+                        <small>వెనుకకు</small>
+                    </button>
+                </div>
+
+                <!-- Interactive 12-Key Numeric Grid (0–9, *, #) -->
+                <div class="keypad-grid" id="phoneKeypadGrid">
+                    <button class="num-key" id="keypad1" data-key="1" title="1 - Select AI Doctor">1 <span>., (Doctor)</span></button>
+                    <button class="num-key" id="keypad2" data-key="2" title="2 - Select Missed Call Weather">2 <span>ABC (Weather)</span></button>
+                    <button class="num-key" id="keypad3" data-key="3" title="3">3 <span>DEF</span></button>
+                    <button class="num-key" id="keypad4" data-key="4" title="4">4 <span>GHI</span></button>
+                    <button class="num-key" id="keypad5" data-key="5" title="5">5 <span>JKL</span></button>
+                    <button class="num-key" id="keypad6" data-key="6" title="6">6 <span>MNO</span></button>
+                    <button class="num-key" id="keypad7" data-key="7" title="7">7 <span>PQRS</span></button>
+                    <button class="num-key" id="keypad8" data-key="8" title="8">8 <span>TUV</span></button>
+                    <button class="num-key" id="keypad9" data-key="9" title="9">9 <span>WXYZ</span></button>
+                    <button class="num-key" id="keypadStar" data-key="*" title="* (Asterisk)">* <span>+</span></button>
+                    <button class="num-key" id="keypad0" data-key="0" title="0 - Replay Audio">0 <span>_ (Replay)</span></button>
+                    <button class="num-key" id="keypadHash" data-key="#" title="# - Change Language"># <span>🌐 (Lang)</span></button>
+                </div>
+            </div>
+
+            <!-- Voice Control Bar for Tester -->
+            <div class="voice-input-console">
+                <div class="console-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>🎙️ Farmer Speech Input:</span>
+                    <select id="selMicLanguage" style="background:#0a0f1d; border:1px solid #334366; color:#38bdf8; font-size:0.75rem; border-radius:6px; padding:0.15rem 0.4rem; cursor:pointer;" title="Choose speech recognition language">
+                        <option value="te-IN" selected>🇮🇳 Telugu (te-IN)</option>
+                        <option value="hi-IN">🇮🇳 Hindi (hi-IN)</option>
+                        <option value="en-IN">🇬🇧 English (en-IN)</option>
+                    </select>
+                </div>
+                <div class="mic-input-row">
+                    <button class="mic-trigger-btn" id="btnMicTrigger" title="Click to allow microphone and speak">
+                        <span id="micIcon">🎙️</span>
+                        <span id="micLabel">Speak (మైక్ / माइक)</span>
+                    </button>
+                    <input type="text" id="customUtteranceInput" placeholder="Click 'Speak' or type in Telugu, Hindi, English..." />
+                    <button class="send-btn" id="btnSendUtterance">Send</button>
+                    <button class="replay-btn" id="btnReplayAudio" title="Replay the latest spoken audio response">🔊 Replay</button>
+                </div>
+                <!-- Live Voice Feedback Message Banner -->
+                <div id="voiceStatusMsg" style="font-size:0.75rem; min-height:1.2rem; line-height:1.3; color:#94a3b8; transition:color 0.2s;"></div>
+                <div class="audio-toggle-row">
+                    <label class="toggle-container">
+                        <input type="checkbox" id="chkAudioOutput" checked>
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-text">🔊 Live Text-to-Speech Audio Playback</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT: Live Monitoring, AI Diagnostics & Weather Dashboard -->
+        <section class="monitor-section">
+            <!-- Call Status & Language Detection Header Card -->
+            <div class="panel-card status-indicator-card">
+                <div class="card-grid-status">
+                    <div class="status-item">
+                        <span class="stat-label">Active Channel Status:</span>
+                        <div class="stat-value-group">
+                            <span class="channel-indicator" id="channelIndicator"></span>
+                            <strong id="channelStatusText">IDLE (Awaiting Call)</strong>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <span class="stat-label">Dynamic Language Detected:</span>
+                        <div class="lang-detected-badge" id="langDetectedBadge">
+                            🌐 Auto-Detecting...
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <span class="stat-label">Audio Engine Status:</span>
+                        <strong class="stat-audio-status" id="audioEngineStatus">Idle ⏸️</strong>
+                    </div>
+                    <div class="status-item">
+                        <span class="stat-label">Google AI Engine:</span>
+                        <strong class="stat-gemini-status" id="geminiStatus">Gemini & Local Expert</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIMULATOR VIEW (Default) -->
+            <div id="simulatorViewContainer">
+                <!-- Step-by-Step AI Doctor Diagnostic Progress Panel -->
+                <div class="panel-card diagnostic-flow-card">
+                    <div class="card-title-between">
+                        <h3>🩺 Feature 1: Multi-Turn AI Doctor Diagnostic State Machine</h3>
+                        <span class="state-pill" id="currentStepBadge">Step 1: Crop Name</span>
+                    </div>
+
+                    <!-- Step-by-Step Progress Pipeline -->
+                    <div class="step-progress-bar">
+                        <div class="step-node active" id="stepNode1">
+                            <span class="step-num">1</span>
+                            <span class="step-name">Crop Name<br><small>పంట / फसल</small></span>
+                        </div>
+                        <div class="step-line" id="stepLine1"></div>
+                        <div class="step-node" id="stepNode2">
+                            <span class="step-num">2</span>
+                            <span class="step-name">Symptoms<br><small>లక్షణాలు / लक्षण</small></span>
+                        </div>
+                        <div class="step-line" id="stepLine2"></div>
+                        <div class="step-node" id="stepNode3">
+                            <span class="step-num">3</span>
+                            <span class="step-name">Duration<br><small>ఎన్ని రోజులు / अवधि</small></span>
+                        </div>
+                        <div class="step-line" id="stepLine3"></div>
+                        <div class="step-node" id="stepNode4">
+                            <span class="step-num">4</span>
+                            <span class="step-name">Severity<br><small>తీవ్రత / गंभीरता</small></span>
+                        </div>
+                        <div class="step-line" id="stepLine4"></div>
+                        <div class="step-node" id="stepNode5">
+                            <span class="step-num">5</span>
+                            <span class="step-name">Prescription<br><small>మందు మోతాదు / उपचार</small></span>
+                        </div>
+                    </div>
+
+                    <div class="diagnostic-grid">
+                        <div class="diag-item">
+                            <span class="diag-label">Identified Crop:</span>
+                            <strong class="diag-val" id="diagCrop">-</strong>
+                        </div>
+                        <div class="diag-item">
+                            <span class="diag-label">Diagnosed Condition:</span>
+                            <strong class="diag-val highlight-danger" id="diagDisease">-</strong>
+                        </div>
+                        <div class="diag-item">
+                            <span class="diag-label">Observed Symptoms:</span>
+                            <strong class="diag-val" id="diagSymptoms">-</strong>
+                        </div>
+                        <div class="diag-item">
+                            <span class="diag-label">Duration & Spread:</span>
+                            <strong class="diag-val" id="diagDurationSeverity">-</strong>
+                        </div>
+                    </div>
+
+                    <!-- Prescription Box -->
+                    <div class="prescription-box" id="prescriptionBox">
+                        <div class="presc-header">💊 Actionable Prescription & Knapsack Dosage (Spoken in Farmer's Language):</div>
+                        <div class="presc-body" id="prescriptionBody">
+                            Click <strong>"FEATURE 1: Call AI Doctor"</strong> on the phone simulator to begin the 1-by-1 voice diagnosis...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Dynamic Live Weather Service Panel -->
+                <div class="panel-card weather-live-card">
+                    <div class="card-title-between">
+                        <h3>🌧️ Feature 2: Automatic Weather Voice Service (Missed-Call Trigger)</h3>
+                        <span class="weather-source-badge" id="weatherSourceBadge">Live Satellite / Radar</span>
+                    </div>
+
+                    <div class="weather-metrics-grid">
+                        <div class="weather-metric-box">
+                            <span class="metric-icon">🌡️</span>
+                            <div>
+                                <span class="metric-label">Live Temperature</span>
+                                <strong class="metric-val" id="metricTemp">29.5°C</strong>
+                            </div>
+                        </div>
+                        <div class="weather-metric-box">
+                            <span class="metric-icon">🌧️</span>
+                            <div>
+                                <span class="metric-label">Rainfall Probability</span>
+                                <strong class="metric-val highlight-rain" id="metricRain">65%</strong>
+                            </div>
+                        </div>
+                        <div class="weather-metric-box">
+                            <span class="metric-icon">💨</span>
+                            <div>
+                                <span class="metric-label">Wind Conditions</span>
+                                <strong class="metric-val" id="metricWind">14.2 km/h</strong>
+                            </div>
+                        </div>
+                        <div class="weather-metric-box">
+                            <span class="metric-icon">🛡️</span>
+                            <div>
+                                <span class="metric-label">Spraying Advisory</span>
+                                <strong class="metric-val" id="metricSpray">Checking...</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="weather-spoken-preview" id="weatherSpokenPreview">
+                        Click <strong>"FEATURE 2: Missed Call Weather"</strong> to trigger the zero-cost callback and hear the generated spoken report for the farmer's registered village!
+                    </div>
+                    <div style="margin-top: 0.6rem; display: flex; justify-content: flex-end;">
+                        <button class="replay-btn" id="btnWeatherReplay" title="Replay Weather Spoken Advisory" disabled>
+                            <span>🔊</span>
+                            <span>Replay Weather Audio (వాతావరణం మళ్లీ వినండి)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Test Scenario Quick Chips across Telugu, Hindi, and English -->
+                <div class="panel-card scenario-card">
+                    <div class="card-title">
+                        <h3>⚡ One-Click Demonstration Scenarios (Telugu • Hindi • English)</h3>
+                    </div>
+                    <p class="card-desc">Click any scenario to simulate the farmer speaking in their natural language:</p>
+                    <div class="scenario-buttons-flex">
+                        <!-- Telugu Scenarios -->
+                        <button class="scenario-pill pill-telugu" data-utterance="మాది అనకాపల్లి, చెరకు పంట వేసాను బాబూ">
+                            🇮🇳 <strong>తెలుగు (Crop):</strong> మాది అనకాపల్లి, చెరకు పంట (Sugarcane)
+                        </button>
+                        <button class="scenario-pill pill-telugu" data-utterance="ఆకులు పసుపు రంగులోకి మారి ఎండిపోయాయి, గడ లోపల ఎర్రగా ఉంది, పిప్పి వాసన వస్తోంది">
+                            🇮🇳 <strong>తెలుగు (Symptoms):</strong> చెరకు ఆకులు ఎర్రబడి పిప్పి వాసన (Red Rot)
+                        </button>
+                        
+                        <!-- Hindi Scenarios -->
+                        <button class="scenario-pill pill-hindi" data-utterance="नमस्ते डॉक्टर साहब, मेरी धान की फसल है">
+                            🇮🇳 <strong>हिन्दी (Crop):</strong> मेरी धान की फसल है (Paddy)
+                        </button>
+                        <button class="scenario-pill pill-hindi" data-utterance="धान की पत्तियों पर आंख के आकार के भूरे धब्बे पड़ गए हैं और पत्तियां झुलस कर सूख रही हैं">
+                            🇮🇳 <strong>हिन्दी (Symptoms):</strong> पत्तियों पर भूरे धब्बे, झुलसा रोग (Blast)
+                        </button>
+
+                        <!-- English Scenarios -->
+                        <button class="scenario-pill pill-english" data-utterance="Hello doctor, I am cultivating cashew nuts in Palasa">
+                            🇬🇧 <strong>English (Crop):</strong> Cultivating cashew nuts in Palasa
+                        </button>
+                        <button class="scenario-pill pill-english" data-utterance="Tender shoots have black spots with gum oozing out and flowers are drying">
+                            🇬🇧 <strong>English (Symptoms):</strong> Shoots have black spots & gum oozing (Tea Mosquito)
+                        </button>
+
+                        <!-- Duration & Severity Answers -->
+                        <button class="scenario-pill pill-neutral" data-utterance="ఈ సమస్య మొదలై వారం రోజులు అయ్యింది, చేను అంతా జాస్తిగా వ్యాపించింది">
+                            ⏱️ <strong>Duration & Spread (Telugu):</strong> వారం రోజులు, చేను అంతా వ్యాపించింది
+                        </button>
+                        <button class="scenario-pill pill-neutral" data-utterance="यह बीमारी पिछले चार दिनों से है और पूरे खेत में फैल चुकी है">
+                            ⏱️ <strong>Duration & Spread (Hindi):</strong> चार दिनों से है, पूरे खेत में फैल चुकी है
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Conversation Transcript -->
+                <div class="panel-card transcript-card">
+                    <div class="card-title-between">
+                        <h3>🗣️ Real-Time Spoken Conversation Transcript</h3>
+                        <button class="clear-btn" id="btnClearLog">Clear Transcript</button>
+                    </div>
+                    <div class="transcript-scroll" id="transcriptScroll">
+                        <div class="system-welcome-bubble">
+                            💡 <strong>Demonstration Ready:</strong> Click <strong>"FEATURE 1: Call AI Doctor"</strong> to test multilingual diagnostic calling, or <strong>"FEATURE 2: Missed Call Weather"</strong> to test the automatic callback weather advisory.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TELEPHONY PRODUCTION GATEWAY VIEW (Separated) -->
+            <div id="telephonyViewContainer" class="hidden">
+                <div class="panel-card telephony-spec-card">
+                    <div class="card-title">
+                        <h3>📞 Production Telecom Gateway Specifications (PSTN / GSM / IVR)</h3>
+                    </div>
+                    <p class="card-desc">
+                        For production deployment on Indian telecom networks (BSNL, Jio, Airtel) via <strong>Exotel</strong>, <strong>Tata Tele Business Services</strong>, or <strong>Twilio Voice</strong>:
+                    </p>
+
+                    <div class="telephony-endpoints-grid">
+                        <div class="endpoint-box">
+                            <span class="badge-method">POST</span>
+                            <code>/api/telephony/doctor-inbound</code>
+                            <p>Toll-free 1800 incoming call webhook. Detects caller ID, fetches profile, answers call, and streams VoiceXML / TwiML audio.</p>
+                        </div>
+                        <div class="endpoint-box">
+                            <span class="badge-method">POST</span>
+                            <code>/api/telephony/doctor-turn</code>
+                            <p>Continuous speech stream handler. Ingests raw telecom PCM audio, runs ASR, updates 4-turn state machine, and generates audio response.</p>
+                        </div>
+                        <div class="endpoint-box">
+                            <span class="badge-method">POST</span>
+                            <code>/api/telephony/weather-missed-call</code>
+                            <p>Missed-call gateway. Rejects incoming call after 1 ring (saving farmer balance) and dispatches Outbound Dialing (OBD) audio bulletin.</p>
+                        </div>
+                    </div>
+
+                    <div class="code-preview-box">
+                        <strong>Sample Outbound Dialing (OBD) Payload Dispatched to Carrier:</strong>
+                        <pre>
+{
+  "to": "+919848022338",
+  "from": "+9118002005566",
+  "caller_name": "Apparao",
+  "village": "Kasimkota",
+  "action": "outbound_audio_broadcast",
+  "audio_text_telugu": "అయ్యా అప్పారావు! మీ గ్రామం కాశీంకోట వద్ద తాజా ఉష్ణోగ్రత 29°C. వర్షం పడే అవకాశం 65%...",
+  "voice_engine": "Google Chirp te-IN / Bhashini"
+}
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bottom-bar">
+        <span>AgriVoice v2.0 • Multilingual AI Agri-Doctor & Automatic Missed-Call Weather Service</span>
+        <span>Google Gemini & Live Meteorological Engine • North Andhra Rural AgroTech</span>
+    </footer>
+
+    <script src="/static/app.js?v=5.0"></script>
+</body>
+</html>
